@@ -2,28 +2,45 @@
 
 This is the Corona SDK of Adjust™. You can read more about Adjust™ at [adjust.com].
 
-## Table of contents
+---
 
-* [Example app](#example-app)
-* [Basic integration](#basic-integration)
-   * [Get the SDK](#sdk-get)
-   * [Add the SDK to your app](#sdk-add)
-      * [Add the SDK to your Android project](#sdk-add-android)
-      * [Add the SDK to your iOS project](#sdk-add-ios)
-   * [Integrate the SDK into your app](#sdk-integrate)
-   * [Adjust logging](#sdk-logging)
-   * [Adjust project settings](#sdk-project-settings)
-      * [Android permissions](#android-permissions)
-      * [Google Play Services](#android-gps)
-      * [Proguard settings](#android-proguard)
-      * [Install referrer](#android-referrer)
-         * [Google Play Referrer API](#android-referrer-gpr-api)
-         * [Google Play Store intent](#android-referrer-gps-intent)
-      * [iOS frameworks](#ios-frameworks)
-* [Additional features](#additional-features)
+### Quick Start
+
+   * [Example app](#example-app)
+   * [Getting Started](#getting-started)
+     * [Get the SDK](#sdk-get)
+     * [Add the SDK to your app](#sdk-add)
+     * [Add the SDK to your Android project](#sdk-add-android)
+     * [Add the SDK to your iOS project](#sdk-add-ios)
+     * [Integrate the SDK into your app](#sdk-integrate)
+     * [Adjust logging](#sdk-logging)
+     * [Adjust project settings](#sdk-project-settings)
+     * [Android permissions](#android-permissions)
+     * [Google Play Services](#android-gps)
+     * [Proguard settings](#android-proguard)
+   * [Install referrer](#android-referrer)
+     * [Google Play Referrer API](#android-referrer-gpr-api)
+     * [Google Play Store intent](#android-referrer-gps-intent)
+   * [iOS frameworks](#ios-frameworks)
+      
+### Deep Linking
+
+   * [Deeplinking](#deeplinking)
+     * [Standard deeplinking scenario](#deeplinking-standard)
+     * [Apple Universal Links](#apple-universal-links)
+     * [Deeplinking on iOS 8 and earlier](#deeplinking-ios-old)
+     * [Deeplinking on Android](#deeplinking-android)
+     * [Deferred deeplinking scenario](#deeplinking-deferred)
+     * [Reattribution via deeplinks](#deeplinking-reattribution)
+     
+### Event Tracking
+
    * [Event tracking](#event-tracking)
-      * [Revenue tracking](#revenue-tracking)
-      * [Revenue deduplication](#revenue-deduplication)
+     * [Revenue tracking](#revenue-tracking)
+     * [Revenue deduplication](#revenue-deduplication)
+
+* [Additional features](#additional-features)
+   
       * [Callback parameters](#callback-parameters)
       * [Partner parameters](#partner-parameters)
     * [Session parameters](#session-parameters)
@@ -46,13 +63,7 @@ This is the Corona SDK of Adjust™. You can read more about Adjust™ at [adjus
     * [Push token](#push-token)
     * [Track additional device identifiers](#track-additional-ids)
     * [Pre-installed trackers](#pre-installed-trackers)
-    * [Deeplinking](#deeplinking)
-        * [Standard deeplinking scenario](#deeplinking-standard)
-        * [Deeplinking on iOS 8 and earlier](#deeplinking-ios-old)
-        * [Deeplinking on iOS 9 and later](#deeplinking-ios-new)
-        * [Deeplinking on Android](#deeplinking-android)
-        * [Deferred deeplinking scenario](#deeplinking-deferred)
-        * [Reattribution via deeplinks](#deeplinking-reattribution)
+    
 * [License](#license)
 
 
