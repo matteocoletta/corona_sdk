@@ -281,6 +281,127 @@ adjust.create({
 
 You can take advantage of the following features once you have integrated the Adjust SDK into your project.
 
+## <a id="deeplinking"></a>Deep linking
+
+If you are using the Adjust tracker URL with an option to deep link into your app from the URL, there is the possibility to get information about the deeplink URL and its content. There are two scenarios when it comes to deeplinking: standard and deferred:
+
+- Standard deeplinking is when a user already has your app installed.
+- Deferred deeplinking is when a user does not have your app installed.
+
+**Note**: At this moment, due to Corona framework limitations, standard deeplinking is currently fully supported **only on the Android platform**. Deferred deeplinking works well on both the iOS and Android platforms.
+
+### <a id="deeplinking-standard"></a>Standard deeplinking
+
+Standard deeplinking is a platform-specific feature and, in order to support it, you need to add some additional settings to your app. If your user already has the app installed and hits a tracker URL with deeplink information in it, your application will be opened and the content of the deep link will be sent to your app so that you can parse it and decide what to do next. 
+
+**Note for iOS**: With the introduction of iOS 9, Apple has changed the way deeplinking is handled in apps. Depending on which deeplinking scenario you want to use for your app (or if you want to use them both to support a wide range of devices), you need to set up your app to handle one or both of the following scenarios. 
+
+Like mentioned above, standard deeplinking is currently not supported due to Corona platform limitations, but, nevertheless, setting it up in your Xcode project as described in the chapters below is still required for deferred deep linking.
+
+### <a id="deeplinking-ios-old"></a>Deeplinking on iOS 8 and earlier
+
+To support deeplink handling in your app for iOS 8 and earlier versions, you need to set a `Custom URL Scheme` setting for your iOS app. In order to do this, please follow our [official iOS SDK README instructions][deeplinking-ios8-lower]. There is **no need** to override methods inside of `AppDelegate.m` (in Corona's case: `AppCoronaDelegate.mm`), just follow the Xcode project setting part of the instructions.
+
+### <a id="deeplinking-ios-new"></a>Deeplinking on iOS 9 and later
+
+Starting from **iOS 9**, Apple introduced suppressed support for the old style deeplinking with custom URL schemes, as described above, in favor of `universal links`. If you want to support deeplinking in your app for iOS 9 and higher, you need to add support for universal link handling. In order to do this, please follow our [official iOS SDK README instructions][deeplinking-ios9-higher]. There is **no need** to override methods inside of `AppDelegate.m` (in Corona's case: `AppCoronaDelegate.mm`), just follow the Xcode project setting part of the instructions.
+
+### <a id="deeplinking-android"></a>Deeplinking on Android
+
+In order to support deeplinking in your Android app, you need to add support for handling the custom URL scheme that you want to use to open your Android app. In order to do this, please follow our [official Android SDK README instructions][deeplinking-android].
+
+In order to obtain information about the link that caused your app to open, you need to add some additional code to your `main.lua` file:
+
+```lua
+local function onSystemEvent(event)
+    if event.type == "applicationOpen" and event.url then
+        print("url = " .. event.url)
+    end
+end
+```
+
+The value of the `event.url` variable in the above example (if available) represents the actual link that opened your Android app.
+
+By completing this, you should be able to handle direct deeplinking on **Android**.
+
+### <a id="deeplinking-deferred"></a>Deferred deeplinking
+
+While deferred deeplinking is not supported out of the box on Android or iOS, the Adjust SDK makes it possible.
+ 
+In order to get information about the URL content through deferred deeplinking, you should set a callback method on the the `adjust` instance which will receive one parameter where the content of the URL will be delivered. You should set this method on the config object by calling the `setDeferredDeeplinkListener` method:
+
+```lua
+local adjust = require "plugin.adjust"
+local json = require "json"
+
+local function deferredDeeplinkListener(event)
+    print("deeplink = " .. event.message)
+end
+
+-- ...
+
+adjust.setDeferredDeeplinkListener(deferredDeeplinkListener)
+
+-- ...
+
+adjust.create({
+    appToken = "{YourAppToken}",
+    environment = "SANDBOX",
+    logLevel = "VERBOSE"
+})
+```
+
+In deferred deeplinking, there is one additional setting available to pass to the `adjust.create` method call. Once the Adjust SDK gets the deferred deeplink information, you can choose whether our SDK opens this URL or not. You can choose to set this option by passing the `shouldLaunchDeeplink` parameter to the `adjust.create` method call:
+
+
+```lua
+local adjust = require "plugin.adjust"
+local json = require "json"
+
+local function deferredDeeplinkListener(event)
+    print("deeplink = " .. event.message)
+end
+
+-- ...
+
+adjust.setDeferredDeeplinkListener(deferredDeeplinkListener)
+
+-- ...
+
+adjust.create({
+    appToken = "{YourAppToken}",
+    environment = "SANDBOX",
+    logLevel = "VERBOSE",
+    shouldLaunchDeeplink = false
+})
+```
+
+If nothing is set here, **the Adjust SDK will always try to launch the URL by default**.
+
+### <a id="deeplinking-reattribution"></a>Reattribution via deeplinks
+
+Adjust enables you to run re-engagement campaigns by using deeplinks. For more information on this, please check our [official docs][reattribution-with-deeplinks].
+
+If you are using this feature, in order for your users to be properly reattributed, you need to make one additional call to the Adjust SDK in your app.
+
+Once you have received information about the deeplink content in your app, add a call to the `appWillOpenUrl` method of the `adjust` instance. By making this call, the Adjust SDK will try to find if there is any new attribution information inside of the deeplink, and, if there is any, it will be sent to the Adjust backend. If a user should be reattributed through a click on an Adjust tracker URL with deeplink content in it, you will see the [attribution callback](#attribution-callback) in your app being triggered with new attribution information for this user.
+
+In the code examples described above, a call to the `appWillOpenUrl` method should be done like this:
+
+
+```lua
+local function onSystemEvent(event)
+    if event.type == "applicationOpen" and event.url then
+        print("url = " .. event.url)
+        
+        adjust.appWillOpenUrl(event.url)
+    end
+end
+```
+
+Having added these calls, if the deeplink that opened your app contains any reattribution parameters, our SDK will pass that information to the backend, which will decide whether the user is going to be reattributed or not. As already mentioned, if a user gets reattributed, an attribution callback (if implemented) will be triggered with the new attribution value, and you will have this information in your app, as well.
+
+
 ### <a id="event-tracking"></a>Event tracking
 
 You can use Adjust to track all kinds of events. Let's say you want to track every tap on a button. If you create a new event token in your [dashboard] - let's say that event token is `abc123` - you can add the following line in your button’s click handler method to track the click:
@@ -866,127 +987,7 @@ If you want to use the Adjust SDK to recognize users whose devices came with you
     ```
     Default tracker: 'abc123'
     ```
-
-### <a id="deeplinking"></a>Deep linking
-
-If you are using the Adjust tracker URL with an option to deep link into your app from the URL, there is the possibility to get information about the deeplink URL and its content. There are two scenarios when it comes to deeplinking: standard and deferred:
-
-- Standard deeplinking is when a user already has your app installed.
-- Deferred deeplinking is when a user does not have your app installed.
-
-**Note**: At this moment, due to Corona framework limitations, standard deeplinking is currently fully supported **only on the Android platform**. Deferred deeplinking works well on both the iOS and Android platforms.
-
-### <a id="deeplinking-standard"></a>Standard deeplinking
-
-Standard deeplinking is a platform-specific feature and, in order to support it, you need to add some additional settings to your app. If your user already has the app installed and hits a tracker URL with deeplink information in it, your application will be opened and the content of the deep link will be sent to your app so that you can parse it and decide what to do next. 
-
-**Note for iOS**: With the introduction of iOS 9, Apple has changed the way deeplinking is handled in apps. Depending on which deeplinking scenario you want to use for your app (or if you want to use them both to support a wide range of devices), you need to set up your app to handle one or both of the following scenarios. 
-
-Like mentioned above, standard deeplinking is currently not supported due to Corona platform limitations, but, nevertheless, setting it up in your Xcode project as described in the chapters below is still required for deferred deep linking.
-
-### <a id="deeplinking-ios-old"></a>Deeplinking on iOS 8 and earlier
-
-To support deeplink handling in your app for iOS 8 and earlier versions, you need to set a `Custom URL Scheme` setting for your iOS app. In order to do this, please follow our [official iOS SDK README instructions][deeplinking-ios8-lower]. There is **no need** to override methods inside of `AppDelegate.m` (in Corona's case: `AppCoronaDelegate.mm`), just follow the Xcode project setting part of the instructions.
-
-### <a id="deeplinking-ios-new"></a>Deeplinking on iOS 9 and later
-
-Starting from **iOS 9**, Apple introduced suppressed support for the old style deeplinking with custom URL schemes, as described above, in favor of `universal links`. If you want to support deeplinking in your app for iOS 9 and higher, you need to add support for universal link handling. In order to do this, please follow our [official iOS SDK README instructions][deeplinking-ios9-higher]. There is **no need** to override methods inside of `AppDelegate.m` (in Corona's case: `AppCoronaDelegate.mm`), just follow the Xcode project setting part of the instructions.
-
-### <a id="deeplinking-android"></a>Deeplinking on Android
-
-In order to support deeplinking in your Android app, you need to add support for handling the custom URL scheme that you want to use to open your Android app. In order to do this, please follow our [official Android SDK README instructions][deeplinking-android].
-
-In order to obtain information about the link that caused your app to open, you need to add some additional code to your `main.lua` file:
-
-```lua
-local function onSystemEvent(event)
-    if event.type == "applicationOpen" and event.url then
-        print("url = " .. event.url)
-    end
-end
-```
-
-The value of the `event.url` variable in the above example (if available) represents the actual link that opened your Android app.
-
-By completing this, you should be able to handle direct deeplinking on **Android**.
-
-### <a id="deeplinking-deferred"></a>Deferred deeplinking
-
-While deferred deeplinking is not supported out of the box on Android or iOS, the Adjust SDK makes it possible.
- 
-In order to get information about the URL content through deferred deeplinking, you should set a callback method on the the `adjust` instance which will receive one parameter where the content of the URL will be delivered. You should set this method on the config object by calling the `setDeferredDeeplinkListener` method:
-
-```lua
-local adjust = require "plugin.adjust"
-local json = require "json"
-
-local function deferredDeeplinkListener(event)
-    print("deeplink = " .. event.message)
-end
-
--- ...
-
-adjust.setDeferredDeeplinkListener(deferredDeeplinkListener)
-
--- ...
-
-adjust.create({
-    appToken = "{YourAppToken}",
-    environment = "SANDBOX",
-    logLevel = "VERBOSE"
-})
-```
-
-In deferred deeplinking, there is one additional setting available to pass to the `adjust.create` method call. Once the Adjust SDK gets the deferred deeplink information, you can choose whether our SDK opens this URL or not. You can choose to set this option by passing the `shouldLaunchDeeplink` parameter to the `adjust.create` method call:
-
-
-```lua
-local adjust = require "plugin.adjust"
-local json = require "json"
-
-local function deferredDeeplinkListener(event)
-    print("deeplink = " .. event.message)
-end
-
--- ...
-
-adjust.setDeferredDeeplinkListener(deferredDeeplinkListener)
-
--- ...
-
-adjust.create({
-    appToken = "{YourAppToken}",
-    environment = "SANDBOX",
-    logLevel = "VERBOSE",
-    shouldLaunchDeeplink = false
-})
-```
-
-If nothing is set here, **the Adjust SDK will always try to launch the URL by default**.
-
-### <a id="deeplinking-reattribution"></a>Reattribution via deeplinks
-
-Adjust enables you to run re-engagement campaigns by using deeplinks. For more information on this, please check our [official docs][reattribution-with-deeplinks].
-
-If you are using this feature, in order for your users to be properly reattributed, you need to make one additional call to the Adjust SDK in your app.
-
-Once you have received information about the deeplink content in your app, add a call to the `appWillOpenUrl` method of the `adjust` instance. By making this call, the Adjust SDK will try to find if there is any new attribution information inside of the deeplink, and, if there is any, it will be sent to the Adjust backend. If a user should be reattributed through a click on an Adjust tracker URL with deeplink content in it, you will see the [attribution callback](#attribution-callback) in your app being triggered with new attribution information for this user.
-
-In the code examples described above, a call to the `appWillOpenUrl` method should be done like this:
-
-
-```lua
-local function onSystemEvent(event)
-    if event.type == "applicationOpen" and event.url then
-        print("url = " .. event.url)
-        
-        adjust.appWillOpenUrl(event.url)
-    end
-end
-```
-
-Having added these calls, if the deeplink that opened your app contains any reattribution parameters, our SDK will pass that information to the backend, which will decide whether the user is going to be reattributed or not. As already mentioned, if a user gets reattributed, an attribution callback (if implemented) will be triggered with the new attribution value, and you will have this information in your app, as well.
-
+    
 ## <a id="license"></a>License
 
 The Adjust SDK is licensed under the MIT License.
