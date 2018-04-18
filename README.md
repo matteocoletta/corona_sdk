@@ -298,13 +298,13 @@ Standard deeplinking is a platform-specific feature and, in order to support it,
 
 Like mentioned above, standard deeplinking is currently not supported due to Corona platform limitations, but, nevertheless, setting it up in your Xcode project as described in the chapters below is still required for deferred deep linking.
 
+### <a id="apple-universal-links"></a>Apple Universal Links
+
+Starting from **iOS 9**, Apple introduced suppressed support for the old style deeplinking with custom URL schemes, as described above, in favor of `universal links`. If you want to support deeplinking in your app for iOS 9 and higher, you need to add support for universal link handling. In order to do this, please follow our [official iOS SDK README instructions][deeplinking-ios9-higher]. There is **no need** to override methods inside of `AppDelegate.m` (in Corona's case: `AppCoronaDelegate.mm`), just follow the Xcode project setting part of the instructions.
+
 ### <a id="deeplinking-ios-old"></a>Deeplinking on iOS 8 and earlier
 
 To support deeplink handling in your app for iOS 8 and earlier versions, you need to set a `Custom URL Scheme` setting for your iOS app. In order to do this, please follow our [official iOS SDK README instructions][deeplinking-ios8-lower]. There is **no need** to override methods inside of `AppDelegate.m` (in Corona's case: `AppCoronaDelegate.mm`), just follow the Xcode project setting part of the instructions.
-
-### <a id="deeplinking-ios-new"></a>Deeplinking on iOS 9 and later
-
-Starting from **iOS 9**, Apple introduced suppressed support for the old style deeplinking with custom URL schemes, as described above, in favor of `universal links`. If you want to support deeplinking in your app for iOS 9 and higher, you need to add support for universal link handling. In order to do this, please follow our [official iOS SDK README instructions][deeplinking-ios9-higher]. There is **no need** to override methods inside of `AppDelegate.m` (in Corona's case: `AppCoronaDelegate.mm`), just follow the Xcode project setting part of the instructions.
 
 ### <a id="deeplinking-android"></a>Deeplinking on Android
 
@@ -402,7 +402,7 @@ end
 Having added these calls, if the deeplink that opened your app contains any reattribution parameters, our SDK will pass that information to the backend, which will decide whether the user is going to be reattributed or not. As already mentioned, if a user gets reattributed, an attribution callback (if implemented) will be triggered with the new attribution value, and you will have this information in your app, as well.
 
 
-### <a id="event-tracking"></a>Event tracking
+## <a id="event-tracking"></a>Event tracking
 
 You can use Adjust to track all kinds of events. Let's say you want to track every tap on a button. If you create a new event token in your [dashboard] - let's say that event token is `abc123` - you can add the following line in your button’s click handler method to track the click:
 
