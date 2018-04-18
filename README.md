@@ -75,7 +75,7 @@ This is the Corona SDK of Adjust™. You can read more about Adjust™ at [adjus
 
 There is example inside the [`plugin` directory][plugin]. In there in you can check how to integrate the Adjust SDK into your app.
 
-## <a id="basic-integration"></a>Basic integration
+## <a id="getting-started"></a>Getting Started
 
 These are the essential steps required to integrate the Adjust SDK into your Corona app project.
 
@@ -126,7 +126,7 @@ PRODUCTION
 
 We use this environment to distinguish between real traffic and test traffic from test devices. It is imperative that you keep this value meaningful at all times.
 
-### <a id="sdk-logging">Adjust logging
+### <a id="sdk-logging"></a>Adjust logging
 
 You can increase or decrease the amount of logs you see in tests by setting the `logLevel` parameter value when calling the `adjust.create` method and assign one of the following string values to it:
 
@@ -140,11 +140,11 @@ You can increase or decrease the amount of logs you see in tests by setting the 
 "SUPPRESS"  // disable all logging
 ```
 
-### <a id="sdk-project-settings">Adjust project settings
+### <a id="sdk-project-settings"></a>Adjust project settings
 
 Once the Adjust SDK has been added to your app, certain tweaks need to be performed so that the Adjust SDK can work properly. Below you can find a description of every additional thing that you need to do after you've added the Adjust SDK into to your app.
 
-### <a id="android-permissions">Android permissions
+### <a id="android-permissions"></a>Android permissions
 
 Please add the following permissions, which the Adjust SDK needs, if they are not already present in your `AndroidManifest.xml` file:
 
@@ -256,7 +256,28 @@ The Adjust SDK iOS module adds three iOS frameworks to your generated Xcode proj
 
 If you are not running any iAd campaigns, feel free to remove the `iAd.framework` dependency.
 
-## <a id="additional-features"></a>Additional features
+### <a id="sdk-signature"></a>SDK signature
+
+An account manager must activate the Adjust SDK signature. Contact Adjust support (support@adjust.com) if you are interested in using this feature.
+
+If the SDK signature has already been enabled on your account and you have access to App Secrets in your Adjust Dashboard, please use the method below to integrate the SDK signature into your app.
+
+An App Secret is set by passing all secret parameters (`secretId`, `info1`, `info2`, `info3`, `info4`) when making the `adjust.create` method call:
+
+```lua
+local adjust = require "plugin.adjust"
+
+adjust.create({
+    appToken = "{YourAppToken}",
+    environment = "SANDBOX",
+    logLevel = "VERBOSE",
+    secretId = aaa,
+    info1 = bbb,
+    info2 = ccc,
+    info3 = ddd,
+    info4 = eee
+})
+```
 
 You can take advantage of the following features once you have integrated the Adjust SDK into your project.
 
@@ -688,29 +709,6 @@ adjust.create({
     environment = "SANDBOX",
     logLevel = "VERBOSE",
     eventBufferingEnabled = true
-})
-```
-
-### <a id="sdk-signature"></a>SDK signature
-
-An account manager must activate the Adjust SDK signature. Contact Adjust support (support@adjust.com) if you are interested in using this feature.
-
-If the SDK signature has already been enabled on your account and you have access to App Secrets in your Adjust Dashboard, please use the method below to integrate the SDK signature into your app.
-
-An App Secret is set by passing all secret parameters (`secretId`, `info1`, `info2`, `info3`, `info4`) when making the `adjust.create` method call:
-
-```lua
-local adjust = require "plugin.adjust"
-
-adjust.create({
-    appToken = "{YourAppToken}",
-    environment = "SANDBOX",
-    logLevel = "VERBOSE",
-    secretId = aaa,
-    info1 = bbb,
-    info2 = ccc,
-    info3 = ddd,
-    info4 = eee
 })
 ```
 
