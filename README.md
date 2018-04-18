@@ -22,6 +22,7 @@ This is the Corona SDK of Adjust™. You can read more about Adjust™ at [adjus
      * [Google Play Referrer API](#android-referrer-gpr-api)
      * [Google Play Store intent](#android-referrer-gps-intent)
    * [iOS frameworks](#ios-frameworks)
+   * [SDK signature](#sdk-signature)
       
 ### Deep Linking
 
@@ -38,33 +39,36 @@ This is the Corona SDK of Adjust™. You can read more about Adjust™ at [adjus
    * [Event tracking](#event-tracking)
      * [Revenue tracking](#revenue-tracking)
      * [Revenue deduplication](#revenue-deduplication)
+     
+### Custom Parameters
 
-* [Additional features](#additional-features)
+   * [Event Parameters](#event-parameters)
+     * [Callback parameters](#callback-parameters)
+     * [Partner parameters](#partner-parameters)
+   * [Session parameters](#session-parameters)
+     * [Session callback parameters](#session-callback-parameters)
+     * [Session partner parameters](#session-partner-parameters)
+   * [Delay start](#delay-start)
+
+### Additional Features
    
-      * [Callback parameters](#callback-parameters)
-      * [Partner parameters](#partner-parameters)
-    * [Session parameters](#session-parameters)
-      * [Session callback parameters](#session-callback-parameters)
-      * [Session partner parameters](#session-partner-parameters)
-      * [Delay start](#delay-start)
-    * [Attribution callback](#attribution-callback)
-    * [Session and event callbacks](#session-event-callbacks)
-    * [Disable tracking](#disable-tracking)
-    * [Offline mode](#offline-mode)
-    * [Event buffering](#event-buffering)
-    * [SDK signature](#sdk-signature)
-    * [Background tracking](#background-tracking)
-    * [Device IDs](#device-ids)
+   * [Push token (Uninstall/Reinstall tracking)](#push-token)
+   * [Attribution callback](#attribution-callback)
+   * [User attribution](#user-attribution)
+   * [Session and event callbacks](#session-event-callbacks)
+   * [Device IDs](#device-ids)
       * [iOS advertising identifier](#di-idfa)
       * [Google Play Services advertising identifier](#di-gps-adid)
       * [Amazon advertising identifier](#di-fire-adid)
       * [Adjust device identifier](#di-adid)
-    * [User attribution](#user-attribution)
-    * [Push token](#push-token)
-    * [Track additional device identifiers](#track-additional-ids)
-    * [Pre-installed trackers](#pre-installed-trackers)
-    
-* [License](#license)
+   * [Track additional device identifiers](#track-additional-ids)
+   * [Pre-installed trackers](#pre-installed-trackers)
+   * [Event buffering](#event-buffering)
+   * [Background tracking](#background-tracking)
+   * [Offline mode](#offline-mode)
+   * [Disable tracking](#disable-tracking)
+   
+### [License](#license)
 
 
 ## <a id="example-app"></a>Example app
