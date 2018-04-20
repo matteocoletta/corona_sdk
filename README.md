@@ -43,8 +43,8 @@ This is the Corona SDK of Adjust™. You can read more about Adjust™ at [adjus
 ### Custom Parameters
 
    * [Event Parameters](#event-parameters)
-     * [Callback parameters](#callback-parameters)
-     * [Partner parameters](#partner-parameters)
+     * [Event callback parameters](#callback-parameters)
+     * [Event partner parameters](#partner-parameters)
    * [Session parameters](#session-parameters)
      * [Session callback parameters](#session-callback-parameters)
      * [Session partner parameters](#session-partner-parameters)
@@ -449,7 +449,15 @@ adjust.trackEvent({
 
 **Note**: Transaction ID is the iOS term. The unique identifier for completed Android in-app purchases is **Order ID**.
 
-### <a id="callback-parameters"></a>Callback parameters
+## Custom Parameters
+
+### <a id="event-parameters"></a>Event parameters
+
+In addition to the data points that Adjust collects [by default](https://partners.adjust.com/placeholders/), you can use the Adjust SDK to track and add to the events as many custom values as you need (user IDs, product IDs...). Custom parameters are only available as raw data (i.e., they won't appear in the Adjust dashboard).
+
+You should use Callback parameters for the values that you collect for your own internal use, and Partner parameters for those that you wish to share with external partners. If a value (e.g. product ID) is tracked both for internal use and to forward it to external partners, the best practice would be to track it both as callback and partner parameter.
+
+### <a id="callback-parameters"></a>Event callback parameters
 
 You can register a callback URL for an event in your [dashboard][dashboard], and we will send a GET request to that URL whenever the event is tracked. You can also put some key-value pairs in an object and pass them to the `trackEvent` method. We will then append these named parameters to your callback URL.
 
@@ -483,7 +491,7 @@ It should be mentioned that we support a variety of placeholders, like `{idfa}` 
 
 You can read more about using URL callbacks, including a full list of available values, in our [callbacks guide][callbacks-guide].
 
-### <a id="partner-parameters"></a>Partner parameters
+### <a id="partner-parameters"></a>Event partner parameters
 
 Similarly to the callback parameters mentioned above, you can also add parameters that Adjust will transmit to network partners of your choice. You can activate these networks in your Adjust Dashboard.
 
