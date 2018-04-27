@@ -324,7 +324,7 @@ The value of the `event.url` variable in the above example (if available) repres
 
 By completing this, you should be able to handle direct deeplinking on **Android**.
 
-### <a id="deeplinking-deferred"></a>Deferred deeplinking
+### <a id="deeplinking-deferred"></a>Deferred deeplinking scenario
 
 While deferred deeplinking is not supported out of the box on Android or iOS, the Adjust SDK makes it possible.
  
@@ -606,6 +606,22 @@ In this case, the Adjust SDK not send the initial install session and any events
 
 **The maximum start time delay of the Adjust SDK is 10 seconds**.
 
+
+
+## <a id="additional-feature"></a>Additional features
+
+### <a id="push-token"></a>Push token (Uninstall/Reinstall tracking)
+
+To send us the push notification token, add the following call to Adjust **whenever you get your token in the app or when it gets updated**:
+
+```js
+local adjust = require "plugin.adjust"
+
+adjust.setPushToken("YourPushNotificationToken");
+```
+
+Push tokens are used for Audience Builder and client callbacks, and they are required for the upcoming uninstall tracking feature.
+
 ### <a id="attribution-callback"></a>Attribution callback
 
 You can register a listener to be notified of tracker attribution changes. Due to the different sources considered for attribution, this information cannot be provided synchronously. The simplest way to achieve this is to create a single anonymous listener which is going to be called **each time a user's attribution value changes**. Use the `setAttributionListener` method of the `adjust` instance to set the listener before starting the SDK:
@@ -652,6 +668,29 @@ Within the listener function you have access to the `attribution` parameters. He
 - `adid`            the Adjust device identifier
 
 Please make sure to consider our [applicable attribution data policies][attribution-data].
+
+### <a id="user-attribution"></a>User attribution
+
+As described in the [attribution callback section](#attribution-callback), this callback is triggered to provide you with information about a new attribution whenever it changes. If you want to access information about a user's current attribution at any other time, you can make a call to the `getAttribution` method of the `adjust` instance:
+
+```lua
+local adjust = require "plugin.adjust"
+local json = require "json"
+
+adjust.getAttribution(function(event) 
+    local json_attribution = json.decode(event.message)
+    print("Tracker token: " .. json_attribution.trackerToken)
+    print("Tracker name: " .. json_attribution.trackerName)
+    print("Campaign: " .. json_attribution.campaign)
+    print("Network: " .. json_attribution.network)
+    print("Creative: " .. json_attribution.creative)
+    print("Adgroup: " .. json_attribution.adgroup)
+    print("Click label: " .. json_attribution.clickLabel)
+    print("ADID: " .. json_attribution.adid)
+end)
+```
+
+**Note**: Information about current attribution is only available after an app installation has been tracked by the Adjust backend and the attribution callback has been triggered. From that moment on, the Adjust SDK has information about a user's attribution and you can access it with this method. So, **it is not possible** to access a user's attribution value before the SDK has been initialized and an attribution callback has been triggered.
 
 ### <a id="session-event-callbacks">Session and event callbacks
 
@@ -788,76 +827,6 @@ And both event and session failed objects also contain:
 
 - `var willRetry` indicates there will be an attempt to resend the package at a later time
 
-### <a id="disable-tracking"></a>Disable tracking
-
-You can disable the Adjust SDK from tracking by invoking the `setEnabled` method of the `adjust` instance with the enabled parameter set to `false`. This setting is **remembered between sessions**, but it can only be activated after the first session.
-
-```lua
-local adjust = require "plugin.adjust"
-
-adjust.setEnabled(false)
-```
-
-You can verify if the Adjust SDK is currently active with the `isEnabled` method of the `adjust` instance:
-
-```lua
-local adjust = require "plugin.adjust"
-
-adjust.isEnabled(function(event) 
-    print("isEnabled = " .. event.message) 
-end)
-```
-
-It is always possible to activate the Adjust SDK by invoking `setEnabled` with the parameter set to `true`.
-
-### <a id="offline-mode"></a>Offline mode
-
-You can put the Adjust SDK in offline mode to suspend transmissions to our servers while retaining tracked data to be sent later. When in offline mode, all information is saved in a file, so it is best not to trigger too many events.
-
-You can activate offline mode by calling the `setOfflineMode` method of the `adjust` instance with `true`.
-
-```lua
-local adjust = require "plugin.adjust"
-
-adjust.setOfflineMode(true)
-```
-
-Conversely, you can deactivate offline mode by calling `setOfflineMode` with`false`. When the Adjust SDK is put back in online mode, all saved information is sent to our servers with the correct time information.
-
-Unlike disabling tracking, **this setting is not remembered** between sessions. This means that the SDK is in online mode whenever it is started, even if the app was terminated in offline mode.
-
-### <a id="event-buffering"></a>Event buffering
-
-If your app makes heavy use of event tracking, you might want to delay some HTTP requests in order to send them in one batch every minute. You can enable event buffering by passing the `eventBufferingEnabled` parameter into the `adjust.create` method call:
-
-```lua
-local adjust = require "plugin.adjust"
-
-adjust.create({
-    appToken = "{YourAppToken}",
-    environment = "SANDBOX",
-    logLevel = "VERBOSE",
-    eventBufferingEnabled = true
-})
-```
-
-### <a id="background-tracking"></a>Background tracking
-
-The default behavior of the Adjust SDK is to **pause sending HTTP requests while the app is in the background**. You can change this by passing the `sendInBackground` parameter into the `adjust.create` method call:
-
-```lua
-local adjust = require "plugin.adjust"
-
-adjust.create({
-    appToken = "{YourAppToken}",
-    environment = "SANDBOX",
-    logLevel = "VERBOSE",
-    sendInBackground = true
-})
-```
-
-If nothing is set here, sending in background is **disabled by default**.
-
 ### <a id="device-ids"></a>Device IDs
 
 Certain services (such as Google Analytics) require you to coordinate device and client IDs in order to prevent duplicate reporting.
@@ -912,41 +881,6 @@ end)
 
 **Note**: Information about the **adid** is only available after an app installation has been tracked by the Adjust backend. From that moment on, the Adjust SDK has information about the device **adid** and you can access it with this method. So, **it is not possible** to access the **adid** value before the SDK has been initialized and installation of your app has been successfully tracked.
 
-### <a id="user-attribution"></a>User attribution
-
-As described in the [attribution callback section](#attribution-callback), this callback is triggered to provide you with information about a new attribution whenever it changes. If you want to access information about a user's current attribution at any other time, you can make a call to the `getAttribution` method of the `adjust` instance:
-
-```lua
-local adjust = require "plugin.adjust"
-local json = require "json"
-
-adjust.getAttribution(function(event) 
-    local json_attribution = json.decode(event.message)
-    print("Tracker token: " .. json_attribution.trackerToken)
-    print("Tracker name: " .. json_attribution.trackerName)
-    print("Campaign: " .. json_attribution.campaign)
-    print("Network: " .. json_attribution.network)
-    print("Creative: " .. json_attribution.creative)
-    print("Adgroup: " .. json_attribution.adgroup)
-    print("Click label: " .. json_attribution.clickLabel)
-    print("ADID: " .. json_attribution.adid)
-end)
-```
-
-**Note**: Information about current attribution is only available after an app installation has been tracked by the Adjust backend and the attribution callback has been triggered. From that moment on, the Adjust SDK has information about a user's attribution and you can access it with this method. So, **it is not possible** to access a user's attribution value before the SDK has been initialized and an attribution callback has been triggered.
-
-### <a id="push-token"></a>Push token
-
-To send us the push notification token, add the following call to Adjust **whenever you get your token in the app or when it gets updated**:
-
-```js
-local adjust = require "plugin.adjust"
-
-adjust.setPushToken("YourPushNotificationToken");
-```
-
-Push tokens are used for Audience Builder and client callbacks, and they are required for the upcoming uninstall tracking feature.
-
 ### <a id="track-additional-ids"></a>Track additional device identifiers
 
 If you are distributing your Android app **outside of the Google Play Store** and would like to track additional device identifiers (IMEI and MEID), you need to explicitly instruct the Adjust SDK to do so. You can do that by passing the `readMobileEquipmentIdentity` parameter when making the call to `adjust.create` method. **The Adjust SDK does not collect these identifiers by default**.
@@ -995,6 +929,76 @@ If you want to use the Adjust SDK to recognize users whose devices came with you
     ```
     Default tracker: 'abc123'
     ```
+
+### <a id="event-buffering"></a>Event buffering
+
+If your app makes heavy use of event tracking, you might want to delay some HTTP requests in order to send them in one batch every minute. You can enable event buffering by passing the `eventBufferingEnabled` parameter into the `adjust.create` method call:
+
+```lua
+local adjust = require "plugin.adjust"
+
+adjust.create({
+    appToken = "{YourAppToken}",
+    environment = "SANDBOX",
+    logLevel = "VERBOSE",
+    eventBufferingEnabled = true
+})
+```
+
+### <a id="background-tracking"></a>Background tracking
+
+The default behavior of the Adjust SDK is to **pause sending HTTP requests while the app is in the background**. You can change this by passing the `sendInBackground` parameter into the `adjust.create` method call:
+
+```lua
+local adjust = require "plugin.adjust"
+
+adjust.create({
+    appToken = "{YourAppToken}",
+    environment = "SANDBOX",
+    logLevel = "VERBOSE",
+    sendInBackground = true
+})
+```
+
+If nothing is set here, sending in background is **disabled by default**.
+
+### <a id="offline-mode"></a>Offline mode
+
+You can put the Adjust SDK in offline mode to suspend transmissions to our servers while retaining tracked data to be sent later. When in offline mode, all information is saved in a file, so it is best not to trigger too many events.
+
+You can activate offline mode by calling the `setOfflineMode` method of the `adjust` instance with `true`.
+
+```lua
+local adjust = require "plugin.adjust"
+
+adjust.setOfflineMode(true)
+```
+
+Conversely, you can deactivate offline mode by calling `setOfflineMode` with`false`. When the Adjust SDK is put back in online mode, all saved information is sent to our servers with the correct time information.
+
+Unlike disabling tracking, **this setting is not remembered** between sessions. This means that the SDK is in online mode whenever it is started, even if the app was terminated in offline mode.
+
+### <a id="disable-tracking"></a>Disable tracking
+
+You can disable the Adjust SDK from tracking by invoking the `setEnabled` method of the `adjust` instance with the enabled parameter set to `false`. This setting is **remembered between sessions**, but it can only be activated after the first session.
+
+```lua
+local adjust = require "plugin.adjust"
+
+adjust.setEnabled(false)
+```
+
+You can verify if the Adjust SDK is currently active with the `isEnabled` method of the `adjust` instance:
+
+```lua
+local adjust = require "plugin.adjust"
+
+adjust.isEnabled(function(event) 
+    print("isEnabled = " .. event.message) 
+end)
+```
+
+It is always possible to activate the Adjust SDK by invoking `setEnabled` with the parameter set to `true`.
     
 ## <a id="license"></a>License
 
