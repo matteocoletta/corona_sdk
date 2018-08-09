@@ -70,12 +70,15 @@ This is the Corona SDK of Adjust™. You can read more about Adjust™ at [adjus
    
 ### [License](#license)
 
+---
 
-## <a id="example-app"></a>Example app
+## <a id="early-steps"></a>Quick Start
+
+### <a id="example-app"></a>Example app
 
 There is example inside the [`plugin` directory][plugin]. In there in you can check how to integrate the Adjust SDK into your app.
 
-## <a id="getting-started"></a>Getting Started
+### <a id="getting-started"></a>Getting Started
 
 These are the essential steps required to integrate the Adjust SDK into your Corona app project.
 
