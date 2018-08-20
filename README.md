@@ -611,7 +611,7 @@ In this case, the Adjust SDK not send the initial install session and any events
 
 
 
-## <a id="additional-feature"></a>Additional features
+## Additional features
 
 ### <a id="push-token"></a>Push token (Uninstall/Reinstall tracking)
 
