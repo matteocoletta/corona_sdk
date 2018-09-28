@@ -933,6 +933,21 @@ If you want to use the Adjust SDK to recognize users whose devices came with you
     ```
     Default tracker: 'abc123'
     ```
+    
+### <a id="background-tracking"></a>Background tracking
+
+The default behavior of the Adjust SDK is to **pause sending HTTP requests while the app is in the background**. You can change this by passing the `sendInBackground` parameter into the `adjust.create` method call:
+
+```lua
+local adjust = require "plugin.adjust"
+
+adjust.create({
+    appToken = "{YourAppToken}",
+    environment = "SANDBOX",
+    logLevel = "VERBOSE",
+    sendInBackground = true
+})
+```
 
 ### <a id="event-buffering"></a>Event buffering
 
@@ -946,21 +961,6 @@ adjust.create({
     environment = "SANDBOX",
     logLevel = "VERBOSE",
     eventBufferingEnabled = true
-})
-```
-
-### <a id="background-tracking"></a>Background tracking
-
-The default behavior of the Adjust SDK is to **pause sending HTTP requests while the app is in the background**. You can change this by passing the `sendInBackground` parameter into the `adjust.create` method call:
-
-```lua
-local adjust = require "plugin.adjust"
-
-adjust.create({
-    appToken = "{YourAppToken}",
-    environment = "SANDBOX",
-    logLevel = "VERBOSE",
-    sendInBackground = true
 })
 ```
 
